@@ -56,6 +56,7 @@ with open('mempool.csv', 'r') as f:
      data = csv.reader(f)
      #data = data.head(20)
      headers = next(data)
+     #for row in itertools.islice(tqdm(data),59):
      for row in tqdm(data):
         G.add_node(row[0],fee=row[1],weigh=row[2],parent=row[3]) 
         
