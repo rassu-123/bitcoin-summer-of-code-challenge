@@ -50,7 +50,7 @@ def printknapSack(G,W, wt, val, n):
 
 
 
-
+# G is network graph
 G = nx.Graph()
 with open('mempool.csv', 'r') as f:
      data = csv.reader(f)
@@ -58,44 +58,50 @@ with open('mempool.csv', 'r') as f:
      headers = next(data)
      #for row in itertools.islice(tqdm(data),59):
      for row in tqdm(data):
+	#making node and with fee ,weight and parents as it's attribute
         G.add_node(row[0],fee=row[1],weigh=row[2],parent=row[3]) 
-        
-        if row[3]!="":
-          
+        # if parent exists make edge between these two nodes with fee and weight i.e. child and parent 
+        if row[3]!="":  
+         # if there are more than one parent for a tx_id
          parents = row[3].split(';')
          for parent in parents:
            
             G.add_edge(row[0], parent,fee=row[1],weight=row[2])
+# as there is no coinbase transaction so removing single nodes from graph
 G.remove_nodes_from(list(nx.isolates(G)))
+# for visualising graph
 nx.draw_networkx(G, node_size=3,with_labels =False)
+# N is the number of disconnected graphs in graph G
 N=nx.number_connected_components(G)
+# making two arrays FEE and WEIGHT to store total FEE and WEIGHT of ith disconnected graph in ith index
 FEE = [0 for n in range(N + 1)]
 WEIGHT = [0 for n in range(N + 1)]
-
+# d is collection of all disconnected graphs of G
 d =(G.subgraph(c) for c in nx.connected_components(G))
 
 for i,sg in enumerate(d):
        
     
-      """print("subgraph {} has {} nodes".format(i, sg.number_of_nodes()))
-      print("\tNodes:", sg.nodes(data=True))
-      print("\tEdges:", sg.edges())"""
+     
       ne=sg.number_of_edges()
     
       f=0
       wt=0
+# iterating through all edges using depth first search to get total fee and total weight of subgraph sg 
       for edge in nx.dfs_edges(sg,depth_limit=ne):
           f=f+int(sg.get_edge_data(edge[0],edge[1])['fee'])
           wt=wt+int(sg.get_edge_data(edge[0],edge[1])['weight'])
-          #print(edge[0], edge[1], sg.get_edge_data(edge[0],edge[1]))
+         
       FEE[i]=f;
       WEIGHT[i]=wt;
 
 W=4000000
+# using 0/1 knapsack method to get subgraphs that will give maximum fees possible with weight less than W (4000000)
 ans=printknapSack(G,W,FEE,WEIGHT, N)
+# printing output
 for i,sg in enumerate(d):
   if(ans[i]==1):
     ne=sg.number_of_edges()
     for edge in nx.dfs_edges(sg,depth_limit=ne):
-      print("\tNodes:", sg.nodes(data=True))
+      print("\tNodes:", sg.nodes(data=True)) 
       print("next")
