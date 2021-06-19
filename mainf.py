@@ -1,0 +1,100 @@
+from csv import reader
+import pandas as pd
+from io import StringIO
+import csv
+import networkx as nx
+from networkx.algorithms import bipartite
+from tqdm import tqdm
+import itertools
+# Python3 code for Dynamic Programming
+# based solution for 0-1 Knapsack problem
+
+# Prints the items which are put in a
+# knapsack of capacity W
+def printknapSack(G,W, wt, val, n):
+  K = [[0 for w in range(W + 1)]for i in range(n + 1)]
+  ans= []
+  ans= [0 for x in range(n)]		
+	
+  
+# initialize the spaces with 0’s with 
+# the help of list comprehensions
+
+  
+  for i in range(n + 1):
+    for w in range(W + 1):
+      if i == 0 or w == 0:
+        K[i][w] = 0
+      elif wt[i - 1] <= w:
+        K[i][w] = max(val[i - 1]+ K[i - 1][w - wt[i - 1]],K[i - 1][w])
+      else:
+        K[i][w] = K[i - 1][w]
+
+	# stores the result of Knapsack
+  res = K[n][W]
+	
+	
+  w = W
+  for i in range(n, 0, -1):
+    if res <= 0:
+      break
+    if res == K[i - 1][w]:
+      continue
+    else:
+
+      ans[i-1]=1
+      res = res - val[i - 1]
+      w = w - wt[i - 1]
+  return ans
+
+
+
+
+
+G = nx.Graph()
+with open('mempool.csv', 'r') as f:
+     data = csv.reader(f)
+     #data = data.head(20)
+     headers = next(data)
+     for row in tqdm(data):
+        G.add_node(row[0],fee=row[1],weigh=row[2],parent=row[3]) 
+        
+        if row[3]!="":
+          
+         parents = row[3].split(';')
+         for parent in parents:
+           
+            G.add_edge(row[0], parent,fee=row[1],weight=row[2])
+G.remove_nodes_from(list(nx.isolates(G)))
+nx.draw_networkx(G, node_size=3,with_labels =False)
+N=nx.number_connected_components(G)
+FEE = [0 for n in range(N + 1)]
+WEIGHT = [0 for n in range(N + 1)]
+
+d =(G.subgraph(c) for c in nx.connected_components(G))
+
+for i,sg in enumerate(d):
+       
+    
+      """print("subgraph {} has {} nodes".format(i, sg.number_of_nodes()))
+      print("\tNodes:", sg.nodes(data=True))
+      print("\tEdges:", sg.edges())"""
+      ne=sg.number_of_edges()
+    
+      f=0
+      wt=0
+      for edge in nx.dfs_edges(sg,depth_limit=ne):
+          f=f+int(sg.get_edge_data(edge[0],edge[1])['fee'])
+          wt=wt+int(sg.get_edge_data(edge[0],edge[1])['weight'])
+          #print(edge[0], edge[1], sg.get_edge_data(edge[0],edge[1]))
+      FEE[i]=f;
+      WEIGHT[i]=wt;
+
+W=4000000
+ans=printknapSack(G,W,FEE,WEIGHT, N)
+for i,sg in enumerate(d):
+  if(ans[i]==1):
+    ne=sg.number_of_edges()
+    for edge in nx.dfs_edges(sg,depth_limit=ne):
+      print("\tNodes:", sg.nodes(data=True))
+      print("next")
