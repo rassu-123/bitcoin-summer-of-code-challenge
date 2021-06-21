@@ -1,6 +1,6 @@
 from csv import reader
 import pandas as pd
-from io import StringIO
+#from io import StringIO
 import csv
 import networkx as nx
 from tqdm import tqdm
@@ -44,7 +44,7 @@ with open('mempool.csv', 'r') as f:
      data = csv.reader(f)
      #data = data.head(20)
      headers = next(data)
-     for row in itertools.islice(tqdm(data),800): # using only first 800 rows of csv file as for around greater 900 program code takes very much time and crashes sometimes
+     for row in itertools.islice(tqdm(data),500): # using only first 500 rows of csv file as for around greater 900 program code takes very much time and crashes sometimes
      #for row in tqdm(data):
 	#making node and with fee ,weight and parents as it's attribute
         G.add_node(row[0],fee=row[1],weigh=row[2],parent=row[3]) 
@@ -99,6 +99,6 @@ for i,sg in enumerate(d):
       L=str(edge[1])
       fh.write(L)
       fh.write('\n')
-      print("next")
+      
   fh.write('\n\ntx_id of next required chain\n\n')
 fh.close()
