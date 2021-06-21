@@ -1,6 +1,6 @@
 # bitcoin-summer-of-code-challenge
 For  solving problem given in sb.README my approach-
- -made a graph for transaction of first 500 rows of csv file (as my laptop froze or programme crashed for more data) __
+ -made a graph for transaction of first 500 rows of csv file (as my laptop froze or programme crashed for more data) \
  -made edges between child and parent__
  -from this graph removed disconnected single node graph as there was no coinbase transaction
  -made two arrays,both araay's ith index storing total fee and  weight of tansactions  of ith disconnected graph 
