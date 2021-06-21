@@ -12,11 +12,6 @@ import itertools
 # knapsack of capacity W
 def printknapSack(G,W, wt, val, n,ans):
   K = [[0 for w in range(W + 1)]for i in range(n + 1)]
-  
-# initialize the spaces with 0’s with 
-# the help of list comprehensions
-
-  
   for i in range(n + 1):
     for w in range(W + 1):
       if i == 0 or w == 0:
@@ -49,8 +44,8 @@ with open('mempool.csv', 'r') as f:
      data = csv.reader(f)
      #data = data.head(20)
      headers = next(data)
-     #for row in itertools.islice(tqdm(data),59):
-     for row in tqdm(data):
+     for row in itertools.islice(tqdm(data),800): # using only first 800 rows of csv file as for around greater 900 program code takes very much time and crashes sometimes
+     #for row in tqdm(data):
 	#making node and with fee ,weight and parents as it's attribute
         G.add_node(row[0],fee=row[1],weigh=row[2],parent=row[3]) 
         # if parent exists make edge between these two nodes with fee and weight i.e. child and parent 
@@ -73,9 +68,6 @@ WEIGHT = [0 for n in range(N + 1)]
 d =(G.subgraph(c) for c in nx.connected_components(G))
 
 for i,sg in enumerate(d):
-       
-    
-     
       ne=sg.number_of_edges()
     
       f=0
@@ -95,7 +87,7 @@ ans= [0 for x in range(N)]
 printknapSack(G,W,FEE,WEIGHT, N,ans)
 d =(G.subgraph(c) for c in nx.connected_components(G))
 fh = open('block.txt','w')
-# printing output
+# block.txt file to store required tx_id
 for i,sg in enumerate(d):
   if(ans[i]==1):
     ne=sg.number_of_edges()
