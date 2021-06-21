@@ -3,7 +3,6 @@ import pandas as pd
 from io import StringIO
 import csv
 import networkx as nx
-from networkx.algorithms import bipartite
 from tqdm import tqdm
 import itertools
 # Python3 code for Dynamic Programming
@@ -11,11 +10,8 @@ import itertools
 
 # Prints the items which are put in a
 # knapsack of capacity W
-def printknapSack(G,W, wt, val, n):
+def printknapSack(G,W, wt, val, n,ans):
   K = [[0 for w in range(W + 1)]for i in range(n + 1)]
-  ans= []
-  ans= [0 for x in range(n)]		
-	
   
 # initialize the spaces with 0’s with 
 # the help of list comprehensions
@@ -45,9 +41,6 @@ def printknapSack(G,W, wt, val, n):
       ans[i-1]=1
       res = res - val[i - 1]
       w = w - wt[i - 1]
-  return ans
-
-
 
 
 # G is network graph
@@ -97,11 +90,23 @@ for i,sg in enumerate(d):
 
 W=4000000
 # using 0/1 knapsack method to get subgraphs that will give maximum fees possible with weight less than W (4000000)
-ans=printknapSack(G,W,FEE,WEIGHT, N)
+ans=[]
+ans= [0 for x in range(N)]	
+printknapSack(G,W,FEE,WEIGHT, N,ans)
+d =(G.subgraph(c) for c in nx.connected_components(G))
+fh = open('block.txt','w')
 # printing output
 for i,sg in enumerate(d):
   if(ans[i]==1):
     ne=sg.number_of_edges()
     for edge in nx.dfs_edges(sg,depth_limit=ne):
-      print("\tNodes:", sg.nodes(data=True)) 
+     
+      L=str(edge[0])
+      fh.write(L)
+      fh.write('\n')
+      L=str(edge[1])
+      fh.write(L)
+      fh.write('\n')
       print("next")
+  fh.write('\n\ntx_id of next required chain\n\n')
+fh.close()
